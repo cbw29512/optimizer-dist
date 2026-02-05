@@ -9,11 +9,13 @@ let adStartTime = 0;
 const runOptimizer = () => {
     if (!isRunning) return;
 
-    // A. PRIVACY: Cookie & Cosmetic Filter (New v1.4)
-    const privacyTargets = '#onetrust-consent-sdk, .cookie-banner, [id*="sp-messaging-container"], ins.adsbygoogle, .ad-slot';
+    // Enhanced targets for 5e.tools and general ad slots
+    const privacyTargets = '#onetrust-consent-sdk, .cookie-banner, [id*="sp-messaging-container"], ins.adsbygoogle, .ad-slot, .video-container-wrapper, [id^="div-gpt-ad"]';
     document.querySelectorAll(privacyTargets).forEach(el => {
         el.remove();
-        document.body.style.overflow = 'auto'; // Unlock scroll
+        document.body.style.overflow = 'auto'; 
+});
+
     });
 
     // B. YOUTUBE: Aggressive Skip Selectors (Kept from v1.2)
