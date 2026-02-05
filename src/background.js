@@ -1,2 +1,4 @@
-// Web Stream Optimizer - background.js
-// Production Grade Logic
+chrome.runtime.onInstalled.addListener(() => {
+  chrome.storage.local.set({ enabled: true });
+  console.log("Web Stream Optimizer: System Initialized.");
+});
