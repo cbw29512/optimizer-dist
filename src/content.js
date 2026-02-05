@@ -1,97 +1,64 @@
 /**
- * Web Stream Optimizer v1.3 - The Guardian Update
- * Full Code Review: Feb 2026
+ * Web Stream Optimizer - Zero-Loss Guardian Engine (v1.4)
+ * Merged Features: Auto-Skip, 16x Speed, Time Tracker, Cookie Zapper, Real-time Toggle
  */
 
 let isRunning = true;
 let adStartTime = 0;
 
-const CONFIG = {
-    youtube: {
-        skipSelectors: [
-            ".ytp-ad-skip-button-modern", ".ytp-skip-ad-button",
-            ".ytp-ad-skip-button-slot", ".ytp-ad-skip-button",
-            "button[class*='skip']", "[aria-label*='Skip ad']"
-        ],
-        overlaySelectors: ['.ytp-ad-overlay-close-button', '.ytp-ad-image-overlay'],
-        playerSelector: '#movie_player'
-    },
-    privacy: {
-        // Targets 2026-era Cookie Banners and Consent Walls
-        cookieSelectors: [
-            '#onetrust-consent-sdk', '.cookie-banner', '[id*="sp-messaging-container"]',
-            '[class*="consent-wall"]', '[id*="cookie-notice"]'
-        ],
-        // Removes empty ad slots from non-YouTube sites
-        cosmeticSelectors: ['ins.adsbygoogle', '.ad-slot', '[id*="google_ads_iframe"]', 'aside[class*="ad-"]']
-    }
-};
-
 const runOptimizer = () => {
     if (!isRunning) return;
 
-    const isYouTube = window.location.hostname.includes('youtube.com');
+    // A. PRIVACY: Cookie & Cosmetic Filter (New v1.4)
+    const privacyTargets = '#onetrust-consent-sdk, .cookie-banner, [id*="sp-messaging-container"], ins.adsbygoogle, .ad-slot';
+    document.querySelectorAll(privacyTargets).forEach(el => {
+        el.remove();
+        document.body.style.overflow = 'auto'; // Unlock scroll
+    });
 
-    // 1. BRAVE-STYLE COSMETIC & COOKIE FILTERING
-    CONFIG.privacy.cookieSelectors.forEach(selector => {
-        const banner = document.querySelector(selector);
-        if (banner) {
-            banner.remove();
-            // Unlock page scrolling often disabled by cookie walls
-            document.body.style.overflow = 'auto';
-            document.documentElement.style.overflow = 'auto';
+    // B. YOUTUBE: Aggressive Skip Selectors (Kept from v1.2)
+    const skipSelectors = [
+        ".ytp-ad-skip-button-modern", ".ytp-skip-ad-button",
+        ".ytp-ad-skip-button-slot", ".ytp-ad-skip-button",
+        "button[class*='skip']", "[aria-label*='Skip ad']",
+        ".ytp-ad-overlay-close-button" // Also dismisses banners
+    ];
+
+    skipSelectors.forEach(selector => {
+        const btn = document.querySelector(selector);
+        if (btn && btn.offsetParent !== null) {
+            btn.click();
+            console.log("⚡ Optimizer: Interaction Handled");
         }
     });
 
-    CONFIG.privacy.cosmeticSelectors.forEach(selector => {
-        document.querySelectorAll(selector).forEach(el => el.remove());
-    });
+    // C. ENGINE: 16x Speed & Time Tracking (Kept from v1.2)
+    const video = document.querySelector('video');
+    const moviePlayer = document.querySelector('#movie_player');
+    const isAd = moviePlayer?.classList.contains('ad-showing') || 
+                 document.querySelector('.ad-interrupting, .ytp-ad-player-overlay');
 
-    // 2. YOUTUBE ENGINE
-    if (isYouTube) {
-        // Dismiss Overlays
-        CONFIG.youtube.overlaySelectors.forEach(selector => {
-            const ov = document.querySelector(selector);
-            if (ov && ov.offsetParent !== null) ov.click();
-        });
-
-        // Click Skip Buttons
-        CONFIG.youtube.skipSelectors.forEach(selector => {
-            const btn = document.querySelector(selector);
-            if (btn && btn.offsetParent !== null) btn.click();
-        });
-
-        const video = document.querySelector('video');
-        const moviePlayer = document.querySelector(CONFIG.youtube.playerSelector);
-        const isAd = moviePlayer?.classList.contains('ad-showing') || 
-                     document.querySelector('.ad-interrupting, .ytp-ad-player-overlay');
-
-        if (video && isAd) {
-            if (video.playbackRate < 16) {
-                video.playbackRate = 16.0;
-                video.muted = true;
-                adStartTime = Date.now();
-                if (video.paused) video.play().catch(() => {});
-            }
-        } else if (video && video.playbackRate > 1.0) {
-            // Calculate Time Saved
-            if (adStartTime > 0) {
-                const elapsed = (Date.now() - adStartTime) / 1000;
-                const saved = Math.round(elapsed * 15);
-                if (saved > 0) {
-                    chrome.storage.local.get(['totalSaved'], (res) => {
-                        chrome.storage.local.set({ totalSaved: (res.totalSaved || 0) + saved });
-                    });
-                }
-                adStartTime = 0; // Reset
-            }
-            video.playbackRate = 1.0;
-            video.muted = false;
+    if (video && isAd) {
+        if (video.playbackRate < 16) {
+            video.playbackRate = 16.0;
+            video.muted = true;
+            adStartTime = Date.now();
+            if (video.paused) video.play().catch(() => {});
         }
+    } else if (video && video.playbackRate > 1.0) {
+        if (adStartTime > 0) {
+            const saved = Math.round(((Date.now() - adStartTime) / 1000) * 15);
+            chrome.storage.local.get(['totalSaved'], (res) => {
+                chrome.storage.local.set({ totalSaved: (res.totalSaved || 0) + saved });
+            });
+            adStartTime = 0;
+        }
+        video.playbackRate = 1.0;
+        video.muted = false;
     }
 };
 
-// --- CORE ARCHITECTURE ---
+// D. OBSERVER & MESSAGING: Real-time Toggle (Kept from v1.1)
 const observer = new MutationObserver(runOptimizer);
 
 chrome.runtime.onMessage.addListener((message) => {
