@@ -3,6 +3,6 @@
   <app appid='ndbedjkgiolaphjikkpnbadkkbihdjjd'>
     <updatecheck 
       codebase='https://raw.githubusercontent.com/cbw29512/optimizer-dist/main/WebStreamOptimizer.crx' 
-      version='1.1' />
+      version='1.2' />
   </app>
 </gupdate>
