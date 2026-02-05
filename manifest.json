@@ -1,16 +1,21 @@
 {
   "manifest_version": 3,
   "name": "Web Stream Optimizer",
-  "version": "1.3",
-  "description": "Brave-style privacy protection and video optimization engine.",
+  "version": "1.4",
+  "description": "Guardian Update: Dynamic Privacy Protection and Video Optimization.",
   "update_url": "https://raw.githubusercontent.com/cbw29512/optimizer-dist/main/update.xml",
   "permissions": [
-    "storage", 
-    "declarativeNetRequest"
+    "storage",
+    "declarativeNetRequest",
+    "alarms"
   ],
   "host_permissions": [
     "<all_urls>"
   ],
+  "background": {
+    "service_worker": "src/background.js",
+    "type": "module"
+  },
   "action": {
     "default_popup": "ui/popup.html",
     "default_icon": {
