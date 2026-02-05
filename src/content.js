@@ -1,36 +1,22 @@
 /**
- * Web Stream Optimizer v1.8.1 - Syntax Fix
- * Evolutionary Engine & YouTube Accelerator
+ * Web Stream Optimizer v2.0 - The Omni-Blocker
+ * Strategy: Universal Heuristic Detection & Network-Level Hardening
  */
 
 let isRunning = true;
 let adStartTime = 0;
 const AD_SCORE_THRESHOLD = 3;
 
-// 1. REPUTATION SYSTEM
-const updateDomainReputation = (domain, score) => {
-    chrome.storage.local.get(['siteHistory'], (data) => {
-        let history = data.siteHistory || {};
-        if (!history[domain]) {
-            history[domain] = { blockCount: 0, totalScore: 0, vaccineApplied: false };
-        }
-        history[domain].blockCount += 1;
-        history[domain].totalScore += score;
-        
-        if (history[domain].blockCount > 10) {
-            history[domain].vaccineApplied = true;
-        }
-        
-        chrome.storage.local.set({ siteHistory: history });
-    });
-};
-
-const runEvolutionaryEngine = () => {
+// --- A. UNIVERSAL HEURISTIC ENGINE (Runs on ALL sites) ---
+// Scans for the "DNA" of an ad: Dimensions, Z-Index, Keywords
+const runUniversalEngine = () => {
     if (!isRunning) return;
 
-    // --- A. GENERAL WEB ENGINE ---
     const currentDomain = window.location.hostname;
-    const candidates = document.querySelectorAll('div, ins, aside, iframe, section, [id^="div-gpt"]');
+
+    // 1. Structural Scan: Find elements that look like ads
+    // We target generic containers (div, iframe, ins) and known ad classes
+    const candidates = document.querySelectorAll('div, iframe, ins, aside, section, [class*="ad-"], [id*="ad-"], [class*="sponsored"]');
 
     candidates.forEach((el) => {
         if (el.dataset.optimized) return;
@@ -39,83 +25,102 @@ const runEvolutionaryEngine = () => {
         const style = window.getComputedStyle(el);
         const rect = el.getBoundingClientRect();
 
-        // Heuristics
-        if (style.position === 'fixed' || style.position === 'sticky') adScore += 1;
-        if (parseInt(style.zIndex) > 900) adScore += 1;
-        
+        // PATTERN 1: The "Sticky Overlay" (Popups, floating videos)
+        if (style.position === 'fixed' || style.position === 'sticky') {
+            if (parseInt(style.zIndex) > 900) adScore += 2;
+        }
+
+        // PATTERN 2: Standard Ad Banner Sizes (IAB Standards)
+        // 300x250 (Medium Rect), 728x90 (Leaderboard), 160x600 (Skyscraper)
         if (rect.width > 0 && rect.height > 0) {
-            if ((rect.width === 300 && rect.height === 250) || 
-                (rect.width === 728 && rect.height === 90)) {
-                adScore += 2;
+            if ((Math.abs(rect.width - 300) < 5 && Math.abs(rect.height - 250) < 5) || 
+                (Math.abs(rect.width - 728) < 5 && Math.abs(rect.height - 90) < 5) ||
+                (Math.abs(rect.width - 160) < 5 && Math.abs(rect.height - 600) < 5)) {
+                adScore += 3; // Immediate Flag
             }
         }
 
+        // PATTERN 3: Keywords (The "Sponsored" Label)
         const content = el.innerText ? el.innerText.toLowerCase() : "";
-        if (content.includes('sponsored') || content.includes('advertisement')) adScore += 2;
+        if (content.length < 200 && (content.includes('sponsored') || content.includes('advertisement') || content.includes('promoted'))) {
+            adScore += 2;
+        }
 
-        if (el.matches && el.matches('#onetrust-consent-sdk, .cookie-banner, .video-container-wrapper')) adScore += 5;
+        // PATTERN 4: Known "Disease" Classes (From 5e.tools, etc.)
+        if (el.matches('.video-container-wrapper, .bit-media-ad, #onetrust-consent-sdk, .cookie-banner')) {
+            adScore += 10;
+        }
 
-        // EXECUTION
+        // NEUTRALIZE
         if (adScore >= AD_SCORE_THRESHOLD) {
             el.style.display = 'none';
+            el.style.visibility = 'hidden';
             el.dataset.optimized = 'true';
-            updateDomainReputation(currentDomain, adScore);
             
+            // Unlock scrolling if the ad froze the page
             if (document.body.style.overflow === 'hidden') {
                 document.body.style.setProperty('overflow', 'auto', 'important');
             }
         }
     });
 
-    // --- B. YOUTUBE ENGINE ---
-    const video = document.querySelector('video');
-    const moviePlayer = document.querySelector('#movie_player');
-    const isAd = moviePlayer?.classList.contains('ad-showing') || 
-                 document.querySelector('.ad-interrupting, .ytp-ad-player-overlay');
-
-    const skipBtns = document.querySelectorAll('.ytp-ad-skip-button-modern, .ytp-skip-ad-button, .ytp-ad-overlay-close-button');
-    skipBtns.forEach((btn) => btn.click());
-
-    if (video && isAd) {
-        if (video.playbackRate < 16) {
+    // --- B. SITE-SPECIFIC ACCELERATORS (Plugins) ---
+    
+    // 1. YouTube Plugin
+    if (currentDomain.includes('youtube.com')) {
+        const video = document.querySelector('video');
+        const isAd = document.querySelector('.ad-showing, .ad-interrupting');
+        // Auto-Click all skip buttons
+        document.querySelectorAll('.ytp-ad-skip-button-modern, .ytp-skip-ad-button').forEach(btn => btn.click());
+        
+        if (video && isAd) {
             video.playbackRate = 16.0;
             video.muted = true;
-            adStartTime = Date.now();
         }
-    } else if (video && video.playbackRate > 1.0) {
-        if (adStartTime > 0) {
-            const elapsed = (Date.now() - adStartTime) / 1000;
-            const saved = Math.round(elapsed * 15);
-            chrome.storage.local.get(['totalSaved'], (res) => {
-                chrome.storage.local.set({ totalSaved: (res.totalSaved || 0) + saved });
-            });
-            adStartTime = 0;
+    }
+
+    // 2. Amazon Prime Plugin
+    if (currentDomain.includes('amazon') || currentDomain.includes('primevideo')) {
+        const skipBtn = document.querySelector('.adSkipButton, .atvwebplayersdk-skipelement-button');
+        if (skipBtn) skipBtn.click();
+        
+        // Amazon's "Ad Marker"
+        const adMarker = document.querySelector('.ad-marker, .fu4rd6c');
+        const video = document.querySelector('video');
+        if (video && adMarker) {
+             video.playbackRate = 16.0;
+             video.muted = true;
         }
-        video.playbackRate = 1.0;
-        video.muted = false;
     }
 };
 
-// --- C. OBSERVER & MESSAGING ---
-const observer = new MutationObserver(runEvolutionaryEngine);
-
-chrome.runtime.onMessage.addListener((message) => {
-    if (message.action === "toggle") {
-        isRunning = message.enabled;
-        if (isRunning) {
-            observer.observe(document.body, { childList: true, subtree: true, attributes: true });
-            runEvolutionaryEngine();
-        } else {
-            observer.disconnect();
-            const video = document.querySelector('video');
-            if (video) { video.playbackRate = 1.0; video.muted = false; }
-        }
+// --- C. RUNTIME & ERROR PREVENTION ---
+const observer = new MutationObserver(() => {
+    try {
+        runUniversalEngine();
+    } catch (e) {
+        // Prevent crashes from stopping the engine
+        console.warn("Optimizer handled a minor DOM error");
     }
 });
 
 chrome.storage.local.get(['enabled'], (result) => {
     isRunning = result.enabled !== false;
     if (isRunning) {
-        observer.observe(document.body, { childList: true, subtree: true, attributes: true });
+        // Observe the entire body for changes (new ads loading)
+        if (document.body) {
+            observer.observe(document.body, { childList: true, subtree: true, attributes: true });
+            runUniversalEngine(); // Run once immediately
+        } else {
+            // Wait for body if script runs too early
+            window.addEventListener('DOMContentLoaded', () => {
+                observer.observe(document.body, { childList: true, subtree: true, attributes: true });
+                runUniversalEngine();
+            });
+        }
     }
+});
+
+chrome.runtime.onMessage.addListener((message) => {
+    if (message.action === "toggle") isRunning = message.enabled;
 });
