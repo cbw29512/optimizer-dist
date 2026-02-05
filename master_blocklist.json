@@ -1,20 +1,7 @@
 [
-  {
-    "id": 101,
-    "priority": 1,
-    "action": { "type": "block" },
-    "condition": { 
-      "urlFilter": "*google-analytics.com*", 
-      "resourceTypes": ["script"] 
-    }
-  },
-  {
-    "id": 102,
-    "priority": 1,
-    "action": { "type": "block" },
-    "condition": { 
-      "urlFilter": "*googletagmanager.com*", 
-      "resourceTypes": ["script"] 
-    }
-  }
+  { "id": 101, "priority": 1, "action": { "type": "block" }, "condition": { "urlFilter": "*googlesyndication.com*", "resourceTypes": ["script"] } },
+  { "id": 102, "priority": 1, "action": { "type": "block" }, "condition": { "urlFilter": "*doubleclick.net*", "resourceTypes": ["script", "sub_frame"] } },
+  { "id": 103, "priority": 1, "action": { "type": "block" }, "condition": { "urlFilter": "*amazon-adsystem.com*", "resourceTypes": ["script"] } },
+  { "id": 104, "priority": 1, "action": { "type": "block" }, "condition": { "urlFilter": "*adnxs.com*", "resourceTypes": ["script"] } },
+  { "id": 105, "priority": 1, "action": { "type": "block" }, "condition": { "urlFilter": "*taboola.com*", "resourceTypes": ["script"] } }
 ]

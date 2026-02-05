@@ -1,64 +1,44 @@
 /**
- * Web Stream Optimizer - Zero-Loss Guardian Engine (v1.4)
- * Merged Features: Auto-Skip, 16x Speed, Time Tracker, Cookie Zapper, Real-time Toggle
+ * Web Stream Optimizer v1.5 - The Universal Guardian
+ * Focus: Pattern-based blocking for all web pages.
  */
 
-let isRunning = true;
-let adStartTime = 0;
-
-const runOptimizer = () => {
+const runUniversalCure = () => {
     if (!isRunning) return;
 
-    // Enhanced targets for 5e.tools and general ad slots
-    const privacyTargets = '#onetrust-consent-sdk, .cookie-banner, [id*="sp-messaging-container"], ins.adsbygoogle, .ad-slot, .video-container-wrapper, [id^="div-gpt-ad"]';
-    document.querySelectorAll(privacyTargets).forEach(el => {
-        el.remove();
-        document.body.style.overflow = 'auto'; 
-});
-
-    });
-
-    // B. YOUTUBE: Aggressive Skip Selectors (Kept from v1.2)
-    const skipSelectors = [
-        ".ytp-ad-skip-button-modern", ".ytp-skip-ad-button",
-        ".ytp-ad-skip-button-slot", ".ytp-ad-skip-button",
-        "button[class*='skip']", "[aria-label*='Skip ad']",
-        ".ytp-ad-overlay-close-button" // Also dismisses banners
+    // 1. Structural Pattern Matching
+    // Targets common ad-server naming conventions (e.g., div-gpt-ad, ad-wrapper, banner-ads)
+    const adPatterns = [
+        '[id^="div-gpt-ad"]', '[class*="ad-unit"]', '[id*="google_ads"]',
+        'ins.adsbygoogle', 'aside[class*="ad-"]', '.video-container-wrapper',
+        '[class*="sponsored-content"]', '.cookie-banner', '#onetrust-consent-sdk'
     ];
 
-    skipSelectors.forEach(selector => {
-        const btn = document.querySelector(selector);
-        if (btn && btn.offsetParent !== null) {
-            btn.click();
-            console.log("⚡ Optimizer: Interaction Handled");
-        }
+    document.querySelectorAll(adPatterns.join(', ')).forEach(el => {
+        el.remove();
+        console.log("🛡️ Universal Guardian: Element Neutralized");
     });
 
-    // C. ENGINE: 16x Speed & Time Tracking (Kept from v1.2)
-    const video = document.querySelector('video');
-    const moviePlayer = document.querySelector('#movie_player');
-    const isAd = moviePlayer?.classList.contains('ad-showing') || 
-                 document.querySelector('.ad-interrupting, .ytp-ad-player-overlay');
+    // 2. Scroll-Lock Break
+    // Many "disease" sites lock the scroll when an ad or consent wall is present
+    if (document.body.style.overflow === 'hidden') {
+        document.body.style.setProperty('overflow', 'auto', 'important');
+        document.documentElement.style.setProperty('overflow', 'auto', 'important');
+    }
 
+    // 3. YouTube/Video Engine (Specific High-Intensity Logic)
+    const video = document.querySelector('video');
+    const isAd = document.querySelector('#movie_player')?.classList.contains('ad-showing') || 
+                 document.querySelector('.ad-interrupting, .ytp-ad-player-overlay');
+    
     if (video && isAd) {
-        if (video.playbackRate < 16) {
-            video.playbackRate = 16.0;
-            video.muted = true;
-            adStartTime = Date.now();
-            if (video.paused) video.play().catch(() => {});
-        }
-    } else if (video && video.playbackRate > 1.0) {
-        if (adStartTime > 0) {
-            const saved = Math.round(((Date.now() - adStartTime) / 1000) * 15);
-            chrome.storage.local.get(['totalSaved'], (res) => {
-                chrome.storage.local.set({ totalSaved: (res.totalSaved || 0) + saved });
-            });
-            adStartTime = 0;
-        }
-        video.playbackRate = 1.0;
-        video.muted = false;
+        video.playbackRate = 16.0;
+        video.muted = true;
     }
 };
+
+const observer = new MutationObserver(runUniversalCure);
+// ... [Existing Message Listener & Initialization] ...
 
 // D. OBSERVER & MESSAGING: Real-time Toggle (Kept from v1.1)
 const observer = new MutationObserver(runOptimizer);
