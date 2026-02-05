@@ -4,7 +4,7 @@
     "priority": 1,
     "action": { "type": "block" },
     "condition": {
-      "urlFilter": "*google-analytics.com*",
+      "urlFilter": "||googlesyndication.com^",
       "resourceTypes": ["script"]
     }
   },
@@ -13,17 +13,8 @@
     "priority": 1,
     "action": { "type": "block" },
     "condition": {
-      "urlFilter": "*doubleclick.net*",
-      "resourceTypes": ["sub_frame", "script"]
-    }
-  },
-  {
-    "id": 3,
-    "priority": 1,
-    "action": { "type": "block" },
-    "condition": {
-      "urlFilter": "*quantserve.com*",
-      "resourceTypes": ["script"]
+      "urlFilter": "||adnxs.com^",
+      "resourceTypes": ["script", "image"]
     }
   }
 ]
