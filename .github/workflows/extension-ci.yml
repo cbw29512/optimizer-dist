@@ -1,0 +1,53 @@
+name: Web Stream Optimizer Release Contract
+
+on:
+  pull_request:
+    paths:
+      - 'manifest.json'
+      - 'rules.json'
+      - 'master_blocklist.json'
+      - 'src/**'
+      - 'ui/**'
+      - 'assets/**'
+      - 'README.md'
+      - 'PRIVACY.md'
+      - 'CHANGELOG.md'
+      - 'tests/**'
+      - '.github/workflows/extension-ci.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'manifest.json'
+      - 'rules.json'
+      - 'master_blocklist.json'
+      - 'src/**'
+      - 'ui/**'
+      - 'assets/**'
+      - 'README.md'
+      - 'PRIVACY.md'
+      - 'CHANGELOG.md'
+      - 'tests/**'
+      - '.github/workflows/extension-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  release-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate Manifest V3 release contract
+        run: python -m unittest discover -s tests -v
+      - name: Validate JSON package inputs
+        run: |
+          python -m json.tool manifest.json >/dev/null
+          python -m json.tool rules.json >/dev/null
+          python -m json.tool master_blocklist.json >/dev/null
