@@ -9,10 +9,12 @@ on:
       - 'src/**'
       - 'ui/**'
       - 'assets/**'
+      - 'scripts/**'
       - 'package.json'
       - 'README.md'
       - 'PRIVACY.md'
       - 'CHANGELOG.md'
+      - 'STORE_LISTING.md'
       - 'tests/**'
       - '.github/workflows/extension-ci.yml'
   push:
@@ -24,10 +26,12 @@ on:
       - 'src/**'
       - 'ui/**'
       - 'assets/**'
+      - 'scripts/**'
       - 'package.json'
       - 'README.md'
       - 'PRIVACY.md'
       - 'CHANGELOG.md'
+      - 'STORE_LISTING.md'
       - 'tests/**'
       - '.github/workflows/extension-ci.yml'
   workflow_dispatch:
@@ -46,13 +50,17 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Validate Manifest V3 release contract
+      - name: Validate Manifest V3 and store-package contracts
         run: python -m unittest discover -s tests -p 'test_*.py' -v
       - name: Validate JSON package inputs
         run: |
           python -m json.tool manifest.json >/dev/null
           python -m json.tool rules.json >/dev/null
           python -m json.tool master_blocklist.json >/dev/null
+      - name: Build Chrome Web Store candidate
+        run: |
+          python scripts/build_store_package.py
+          unzip -l dist/web-stream-optimizer-1-9-0.zip
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
