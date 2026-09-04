@@ -46,7 +46,9 @@ test('loaded extension toggle controls DOM and network protection end to end', {
     browser = await puppeteer.launch({
       headless: true,
       pipe: true,
+      dumpio: true,
       enableExtensions: [EXTENSION_PATH],
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
     });
 
     const workerTarget = await browser.waitForTarget(
