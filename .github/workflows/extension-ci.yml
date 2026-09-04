@@ -9,6 +9,7 @@ on:
       - 'src/**'
       - 'ui/**'
       - 'assets/**'
+      - 'package.json'
       - 'README.md'
       - 'PRIVACY.md'
       - 'CHANGELOG.md'
@@ -23,6 +24,7 @@ on:
       - 'src/**'
       - 'ui/**'
       - 'assets/**'
+      - 'package.json'
       - 'README.md'
       - 'PRIVACY.md'
       - 'CHANGELOG.md'
@@ -36,7 +38,7 @@ permissions:
 jobs:
   release-contract:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -45,9 +47,17 @@ jobs:
         with:
           python-version: '3.12'
       - name: Validate Manifest V3 release contract
-        run: python -m unittest discover -s tests -v
+        run: python -m unittest discover -s tests -p 'test_*.py' -v
       - name: Validate JSON package inputs
         run: |
           python -m json.tool manifest.json >/dev/null
           python -m json.tool rules.json >/dev/null
           python -m json.tool master_blocklist.json >/dev/null
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install pinned browser test dependency
+        run: npm install --ignore-scripts=false
+      - name: Loaded Chromium extension integration
+        run: npm run test:browser
