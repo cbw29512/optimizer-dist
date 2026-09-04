@@ -1,14 +1,21 @@
-# Ignore the private key (CRITICAL for security)
+# Private/signing material
 *.pem
 
-# Ignore local Python artifacts
+# Local Python artifacts
 __pycache__/
 *.py[cod]
 
-# Ignore Windows system files
+# Node/browser test artifacts
+node_modules/
+package-lock.json
+
+# Generated Chrome Web Store packages
+dist/
+
+# Windows system files
 Thumbs.db
 desktop.ini
 
-# Ignore the icon generator script (unless you want to share it)
+# Local helper scripts not part of the extension release
 generate_icons.py
 playback_efficency.py

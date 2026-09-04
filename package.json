@@ -1,13 +1,14 @@
 {
   "name": "web-stream-optimizer",
   "private": true,
-  "version": "1.8.0",
+  "version": "1.9.0",
   "type": "module",
   "engines": {
     "node": "24.x"
   },
   "scripts": {
-    "test:browser": "node --test tests/extension_browser.test.mjs"
+    "test:browser": "node --test tests/extension_browser.test.mjs",
+    "build:store": "python scripts/build_store_package.py"
   },
   "devDependencies": {
     "puppeteer": "25.10.0"

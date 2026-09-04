@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Web Stream Optimizer",
-  "version": "1.8",
+  "version": "1.9.0",
   "description": "Heuristic ad, overlay, and streaming-page cleanup with local filtering and daily blocklist updates.",
   "permissions": [
     "storage",
